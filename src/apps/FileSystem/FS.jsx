@@ -31,6 +31,11 @@ class FS extends PureComponent {
       openPath: undefined
     })
   }
+  onUpdateLastPath = (newPos) => {
+    this.setState({
+      openPath: this.state.openPath.slice(0, -1).concat(newPos)
+    })
+  }
 
   render () {
     const { openPath, items } = this.state
@@ -41,7 +46,7 @@ class FS extends PureComponent {
         </div>
         <div className='fsContent'>
           {openPath
-            ? <Content path={openPath} onClose={this.onCloseFile} />
+            ? <Content path={openPath} onClose={this.onCloseFile} updateLastPath={this.onUpdateLastPath} />
             : <div> please select some...</div>}
         </div>
        </div>

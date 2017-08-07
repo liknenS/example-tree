@@ -34,8 +34,8 @@ class Content extends PureComponent {
   }
 
   onRename = () => {
-    rename(this.props.path, this.state.newName)
-     this.setState({ newName: undefined })
+    rename(this.props.path, this.state.newName, this.props.updateLastPath)
+    this.setState({ newName: undefined })
   }
   onSaveText = () => {
     updateFileText(this.props.path, this.state.newText)

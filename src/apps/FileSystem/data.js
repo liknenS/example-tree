@@ -128,7 +128,7 @@ export const updateFileText = (path, text) => {
   })
 }
 
-export const rename = (path, name) => {
+export const rename = (path, name, cb) => {
   return recursiveUpdate(path.slice(0, -1), (node) => {
     const newItems = node.items.slice()
     const pos = path[path.length - 1]
@@ -137,6 +137,7 @@ export const rename = (path, name) => {
       name
     }
     newItems.sort(sortCom)
+    cb(newItems.findIndex(item => item.name === name))
     return {
       ...node,
       items: newItems
