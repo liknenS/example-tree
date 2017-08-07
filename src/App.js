@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Node, { data } from './apps/FileSystem'
+import FS from './apps/FileSystem'
 
 class App extends Component {
   render() {
@@ -11,9 +11,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome to React</h2>
         </div>
-        <div className='App-FS'>
-          <Node {...data} />
-        </div>
+        <FS />
       </div>
     );
   }
