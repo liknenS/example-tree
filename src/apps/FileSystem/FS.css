@@ -1,0 +1,29 @@
+.colapse {
+  display: inline-block;
+  background-color: #aaa;
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  line-height: 15px;
+}
+.folder {
+  color: #cb3;
+}
+.file {
+  color: #444;
+  padding-left: 20px;
+}
+.title {
+  align-items: center;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+}
+
+.childrens{
+  padding-left: 20px;
+}
+.noItems {
+  color: #999;
+  text-align: left;
+}
