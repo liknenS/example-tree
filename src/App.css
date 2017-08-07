@@ -26,5 +26,5 @@
 .App-FS {
   padding-left: 20px;
   background-color: #eee;
-  width: 500px;
+  max-width: 500px;
 }
