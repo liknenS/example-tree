@@ -1,4 +1,4 @@
-let data = {
+let data = JSON.parse(localStorage.getItem('data')) || {
   items: [
     {
       name: 'fold_a',
@@ -44,6 +44,7 @@ const notify = () => {
   for (let cb of subscribers) {
     cb(data)
   }
+  localStorage.setItem('data', JSON.stringify(data))
 }
 export const getElementByPath = (path) => {
   let target = data
@@ -63,22 +64,43 @@ export const getTextPath = (path) => {
   return res
 }
 
-export const create = (path, createData, node) => {
+const recursiveUpdate = (path, cb, node) => {
   const [index, ...restPath] = path
   if (!node) {
-    data = {
-      items: data.items.slice()
+    if(path.length){
+      data = {
+        items: data.items.slice()
+      }
+      data.items[index] = recursiveUpdate(restPath, cb, data.items[index])
+    } else {
+      data = cb(data)
     }
-    data.items[index] = create(restPath, createData, data.items[index])
     notify()
   } else if (path.length) {
     const newItems = node.items.slice()
-    newItems[index] = create(restPath, createData, node.items[index])
+    newItems[index] = recursiveUpdate(restPath, cb, node.items[index])
     return {
       ...node,
       items: newItems
     }
   } else {
+    return cb(node)
+  }
+}
+
+const sortCom = (a,b) => {
+  if((a.items && b.items) || (!a.items && !b.items)){
+    return a.name > b.name ? 1 : -1
+  } else if (a.items) {
+    return -1
+  } else {
+    return 1
+  }
+}
+
+
+export const create = (path, createData) => {
+  return recursiveUpdate(path, (node) => {
     const newItem = {
       name: createData.name,
     }
@@ -88,19 +110,54 @@ export const create = (path, createData, node) => {
       newItem.text = 'new file....\nplease Edit MEEEEEEE!!!'
     }
     const newItems = node.items.concat(newItem)
-    newItems.sort((a,b) => {
-      if((a.items && b.items) || (!a.items && !b.items)){
-        return a.name > b.name ? 1 : -1
-      } else if (a.items) {
-        return -1
-      } else {
-        return 1
-      }
-    })
+    newItems.sort(sortCom)
     return {
       ...node,
       items: newItems
     }
-  }
+
+  })
 }
+
+export const updateFileText = (path, text) => {
+  return recursiveUpdate(path, (node) => {
+    return {
+      ...node,
+      text
+    }
+  })
+}
+
+export const rename = (path, name) => {
+  return recursiveUpdate(path.slice(0, -1), (node) => {
+    const newItems = node.items.slice()
+    const pos = path[path.length - 1]
+    newItems[pos] = {
+      ...node.items[pos],
+      name
+    }
+    newItems.sort(sortCom)
+    return {
+      ...node,
+      items: newItems
+    }
+  })
+}
+
+export const del = (path) => {
+  return recursiveUpdate(path.slice(0, -1), (node) => {
+    const newItems = node.items.slice()
+    newItems.splice(path[path.length - 1], 1)
+    return {
+      ...node,
+      items: newItems
+    }
+  })
+}
+
+
+
+
+
+
 export default data

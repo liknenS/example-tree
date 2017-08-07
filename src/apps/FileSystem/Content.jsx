@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import style from './FS.css'
-import { getElementByPath, create, getTextPath } from './data'
+import { getElementByPath, create, getTextPath, del, rename, updateFileText } from './data'
 
 class Content extends PureComponent {
   state = {
@@ -28,16 +28,36 @@ class Content extends PureComponent {
       }
     })
   }
+  onDel = () => {
+    del(this.props.path)
+    this.props.onClose && this.props.onClose()
+  }
+
+  onRename = () => {
+    rename(this.props.path, this.state.newName)
+     this.setState({ newName: undefined })
+  }
+  onSaveText = () => {
+    updateFileText(this.props.path, this.state.newText)
+     this.setState({ newText: undefined })
+  }
+  onNameChange = (event) => this.setState({ newName: event.target.value})
+
+  onNameText = (event) => this.setState({ newText: event.target.value})
 
   render () {
     const { path } = this.props
-    const { createData } = this.state
+    const { createData, newName, newText } = this.state
     const element = getElementByPath(path)
     const textPath = getTextPath(path)
     const isFolder = !!element.items
     return (
       <div className='contentLayer'>
-        <div>{textPath}<input className='nameEdit' value={element.name} /></div>
+        <div>
+          {textPath}<input className='nameEdit' value={ newName == undefined ? element.name : newName}  onChange={this.onNameChange} />&nbsp;&nbsp;
+          { newName && <button onClick={this.onRename}>update Name</button> }&nbsp;&nbsp;
+          <button onClick={this.onDel}>delete</button>
+        </div>
         {
           isFolder
           ? (
@@ -49,9 +69,13 @@ class Content extends PureComponent {
               {
                 createData && (
                   <div className='createForm'>
-                    name:&nbsp;&nbsp;
-                    <input value={createData.name} onChange={this.onCreateChange} />&nbsp;&nbsp;
-                    <button onClick={() => this.onEndCreate('folder')}>done</button>
+                    {createData.type} name:&nbsp;&nbsp;
+                    <input autoFocus value={createData.name} onChange={this.onCreateChange} />&nbsp;&nbsp;
+                    {
+                      (createData.name && createData.name.trim().length) && (
+                        <button onClick={() => this.onEndCreate('folder')}>done</button>
+                      )
+                    }
                   </div>
                 )
               }
@@ -60,9 +84,9 @@ class Content extends PureComponent {
           :(
             <div>
               <div>
-                <textarea rows="10" cols="45" value={element.text}> </textarea>
-                </div>
-              <button >Save file</button>
+                <textarea rows="10" cols="45" value={newText == undefined ? element.text : newText} onChange={this.onNameText} />
+              </div>
+              {newText && <button onClick={this.onSaveText} >Save file</button> }
             </div>
           )
         }

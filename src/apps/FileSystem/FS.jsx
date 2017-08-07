@@ -26,6 +26,12 @@ class FS extends PureComponent {
     })
   }
 
+  onCloseFile = () => {
+    this.setState({
+      openPath: undefined
+    })
+  }
+
   render () {
     const { openPath, items } = this.state
     return (
@@ -34,7 +40,9 @@ class FS extends PureComponent {
           <Node isRoot items={items} onOpen={this.onOpen} />
         </div>
         <div className='fsContent'>
-          {openPath && <Content path={openPath} />}
+          {openPath
+            ? <Content path={openPath} onClose={this.onCloseFile} />
+            : <div> please select some...</div>}
         </div>
        </div>
     )
